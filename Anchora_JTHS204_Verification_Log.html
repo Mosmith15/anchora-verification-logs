@@ -8,7 +8,7 @@
 <style>
   :root {
     --purple: #534AB7; --l-purple: #EEEDFE;
-    --teal: #0F6E56; --l-teal: #E1F5EE;h
+    --teal: #0F6E56; --l-teal: #E1F5EE;
     --amber: #BA7517; --l-amber: #FAEEDA;
     --coral: #993C1D; --l-coral: #FAECE7;
     --green: #3B6D11; --l-green: #EAF3DE;
@@ -284,8 +284,12 @@ async function loadEntries() {
     renderEntries(allEntries);
     showSync('ok', `Connected · ${allEntries.length} entr${allEntries.length===1?'y':'ies'} · Last synced ${new Date().toLocaleTimeString()}`);
   } catch(e) {
+    if (e && e.message && e.message.includes('DOMTokenList')) {
+      try { renderEntries([]); } catch(x) {}
+      return;
+    }
     showSync('error', 'Connection error — check your Apps Script URL');
-    renderEntries([]);
+    try { renderEntries([]); } catch(x) {}
   }
 }
 
@@ -483,8 +487,9 @@ async function saveEntry() {
     closeModal();
     showSync('ok', `Saved to Google Sheets · ${allEntries.length} entries`);
   } catch(e) {
-    alert('Save failed. Check your Google Sheets connection and try again.');
-    showSync('error', 'Save failed — check your Apps Script URL');
+    if (!e || !e.message || !e.message.includes('DOMTokenList')) {
+      showSync('error', 'Save failed — check your Apps Script URL');
+    }
   } finally {
     saveBtn.disabled = false;
     saveBtn.textContent = 'Save Entry';
