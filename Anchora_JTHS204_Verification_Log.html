@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anchora™ Research Verification Log — Joliet Township High School District 204</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --purple: #534AB7; --l-purple: #EEEDFE;
+    --teal: #0F6E56; --l-teal: #E1F5EE;
+    --amber: #BA7517; --l-amber: #FAEEDA;
+    --coral: #993C1D; --l-coral: #FAECE7;
+    --green: #3B6D11; --l-green: #EAF3DE;
+    --red: #A32D2D; --l-red: #FCEBEB;
+    --gray: #444441; --mid-gray: #888780;
+    --l-gray: #F5F4EF; --border: #E2E0D8; --white: #FFFFFF;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: #F8F7F2; color: var(--gray); }
+
+  /* ── HEADER ── */
+  .header { background: var(--purple); padding: 28px 48px; display: flex; justify-content: space-between; align-items: flex-end; }
+  .header h1 { font-family: 'DM Serif Display', serif; font-size: 26px; color: white; }
+  .header p { font-size: 13px; color: rgba(255,255,255,0.65); margin-top: 4px; font-style: italic; }
+  .header-right { text-align: right; }
+  .badge { display: inline-block; background: var(--teal); color: white; font-size: 10px; font-weight: 600; padding: 3px 10px; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 5px; }
+  .meta { font-size: 12px; color: rgba(255,255,255,0.6); font-family: 'DM Mono', monospace; }
+
+  /* ── TOOLBAR ── */
+  .toolbar { background: white; border-bottom: 1px solid var(--border); padding: 14px 48px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  .btn { padding: 9px 20px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; border: none; transition: all 0.15s; }
+  .btn-primary { background: var(--purple); color: white; }
+  .btn-primary:hover { background: #453DA0; }
+  .btn-teal { background: var(--teal); color: white; }
+  .btn-teal:hover { background: #0A5A45; }
+  .btn-outline { background: white; color: var(--gray); border: 1px solid var(--border); }
+  .btn-outline:hover { border-color: var(--purple); color: var(--purple); }
+  .btn-outline.active { border-color: var(--purple); color: var(--purple); background: var(--l-purple); }
+  .log-count { margin-left: auto; font-family: 'DM Mono', monospace; font-size: 12px; color: var(--mid-gray); }
+
+  /* ── SYNC STATUS ── */
+  .sync-bar { background: var(--l-teal); border-bottom: 1px solid var(--teal); padding: 8px 48px; display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--teal); font-weight: 500; }
+  .sync-bar.error { background: var(--l-red); border-color: var(--red); color: var(--red); }
+  .sync-bar.warning { background: var(--l-amber); border-color: var(--amber); color: var(--amber); }
+  .sync-bar.hidden { display: none; }
+  .sync-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--teal); animation: pulse 2s infinite; }
+  .sync-bar.error .sync-dot { background: var(--red); animation: none; }
+  .sync-bar.warning .sync-dot { background: var(--amber); animation: none; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  /* ── SETUP BANNER ── */
+  .setup-banner { background: var(--l-amber); border: 1px solid var(--amber); margin: 24px 48px; padding: 20px 24px; }
+  .setup-banner h3 { font-size: 16px; font-weight: 700; color: var(--amber); margin-bottom: 8px; }
+  .setup-banner p { font-size: 13px; color: var(--gray); line-height: 1.6; }
+  .setup-banner code { background: rgba(0,0,0,0.08); padding: 1px 6px; font-family: 'DM Mono', monospace; font-size: 12px; }
+  .setup-banner.hidden { display: none; }
+
+  /* ── CONTAINER ── */
+  .container { padding: 24px 48px; }
+
+  .empty-state { text-align: center; padding: 60px 40px; border: 2px dashed var(--border); background: white; margin-bottom: 24px; }
+  .empty-state h3 { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--purple); margin-bottom: 8px; }
+  .empty-state p { font-size: 14px; color: var(--mid-gray); }
+
+  /* ── ENTRY CARDS ── */
+  .entry-card { background: white; border: 1px solid var(--border); margin-bottom: 12px; overflow: hidden; }
+  .entry-card.type-regulatory { border-left: 4px solid var(--teal); }
+  .entry-card.type-contact { border-left: 4px solid var(--purple); }
+  .entry-card.type-update { border-left: 4px solid var(--amber); }
+  .entry-card.type-notification { border-left: 4px solid var(--green); }
+
+  .entry-header { padding: 14px 20px; display: flex; align-items: center; gap: 14px; cursor: pointer; user-select: none; }
+  .entry-header:hover { background: var(--l-gray); }
+  .entry-num { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500; color: var(--mid-gray); min-width: 36px; }
+  .entry-type-badge { padding: 3px 10px; font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; font-family: 'DM Mono', monospace; white-space: nowrap; }
+  .type-regulatory .entry-type-badge { background: var(--l-teal); color: var(--teal); }
+  .type-contact .entry-type-badge { background: var(--l-purple); color: var(--purple); }
+  .type-update .entry-type-badge { background: var(--l-amber); color: var(--amber); }
+  .type-notification .entry-type-badge { background: var(--l-green); color: var(--green); }
+  .entry-summary { flex: 1; }
+  .entry-summary .title { font-size: 14px; font-weight: 600; color: var(--gray); }
+  .entry-summary .subtitle { font-size: 12px; color: var(--mid-gray); margin-top: 2px; font-family: 'DM Mono', monospace; }
+  .entry-delete { padding: 4px 10px; background: none; border: none; color: var(--mid-gray); cursor: pointer; font-size: 18px; }
+  .entry-delete:hover { color: var(--red); }
+
+  .entry-body { display: none; padding: 20px; border-top: 1px solid var(--border); }
+  .entry-body.open { display: block; }
+
+  .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 14px; }
+  .form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 14px; }
+  .form-full { margin-bottom: 14px; }
+
+  .field-label { font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--mid-gray); margin-bottom: 6px; font-family: 'DM Mono', monospace; }
+  .field-req { color: var(--coral); }
+
+  input[type="text"], input[type="date"], input[type="time"], input[type="url"], input[type="email"], select, textarea {
+    width: 100%; padding: 10px 12px; font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--gray); border: 1px solid var(--border); background: white; outline: none;
+  }
+  input:focus, select:focus, textarea:focus { border-color: var(--purple); }
+  textarea { resize: vertical; min-height: 70px; }
+  select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888780' stroke-width='1.5' fill='none'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
+
+  .field-display { padding: 8px 12px; background: var(--l-gray); font-size: 13px; color: var(--gray); border-left: 3px solid var(--border); margin-bottom: 12px; line-height: 1.5; }
+  .field-display.highlight { border-left-color: var(--teal); background: var(--l-teal); }
+  .field-display a { color: var(--blue,#185FA5); }
+
+  .kb-tag-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+  .kb-tag { padding: 3px 10px; font-size: 11px; font-weight: 500; border: 1px solid var(--border); cursor: pointer; user-select: none; font-family: 'DM Mono', monospace; }
+  .kb-tag:hover { border-color: var(--teal); color: var(--teal); }
+  .kb-tag.selected { background: var(--teal); color: white; border-color: var(--teal); }
+
+  .urgency-row { display: flex; gap: 8px; margin-top: 6px; }
+  .urgency-btn { padding: 6px 14px; font-size: 12px; font-weight: 600; border: 2px solid; cursor: pointer; background: white; font-family: 'DM Sans', sans-serif; }
+  .urgency-btn.routine { border-color: var(--green); color: var(--green); }
+  .urgency-btn.routine.active { background: var(--green); color: white; }
+  .urgency-btn.significant { border-color: var(--amber); color: var(--amber); }
+  .urgency-btn.significant.active { background: var(--amber); color: white; }
+  .urgency-btn.urgent { border-color: var(--red); color: var(--red); }
+  .urgency-btn.urgent.active { background: var(--red); color: white; }
+
+  .type-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+  .type-option { padding: 14px 16px; border: 2px solid var(--border); cursor: pointer; text-align: center; transition: all 0.15s; }
+  .type-option:hover { border-color: var(--purple); }
+  .type-option.selected { border-color: var(--purple); background: var(--l-purple); }
+  .type-option .t-icon { font-size: 22px; margin-bottom: 4px; }
+  .type-option .t-name { font-size: 13px; font-weight: 600; color: var(--gray); }
+  .type-option .t-desc { font-size: 11px; color: var(--mid-gray); margin-top: 2px; }
+
+  /* ── MODAL ── */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: white; width: 620px; max-width: 95vw; max-height: 88vh; overflow-y: auto; }
+  .modal-header { background: var(--purple); padding: 20px 24px; display: flex; justify-content: space-between; align-items: center; }
+  .modal-header h2 { font-family: 'DM Serif Display', serif; font-size: 20px; color: white; }
+  .modal-close { background: none; border: none; color: white; font-size: 24px; cursor: pointer; line-height: 1; }
+  .modal-body { padding: 24px; }
+  .modal-footer { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; gap: 10px; justify-content: flex-end; }
+  .saving-indicator { font-size: 12px; color: var(--mid-gray); align-self: center; font-style: italic; display: none; }
+
+  /* ── FOOTER ── */
+  .footer { background: var(--purple); padding: 20px 48px; display: flex; justify-content: space-between; align-items: center; margin-top: 48px; }
+  .footer p { font-size: 12px; color: rgba(255,255,255,0.6); font-style: italic; }
+
+  @media print {
+    .toolbar, .btn, .modal-overlay, .entry-delete, .sync-bar, .setup-banner { display: none !important; }
+    .header, .footer { background: #534AB7 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .entry-body { display: block !important; }
+    .entry-card { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>Anchora™ Research Verification Log</h1>
+    <p id="district-display">Joliet Township High School District 204 · Figure 8 Intelligence™ · Monica Smith, LCSW, PEL-SSW</p>
+  </div>
+  <div class="header-right">
+    <div class="badge">Ethics Gate™ Verified</div>
+    <div class="meta" id="date-display"></div>
+  </div>
+</div>
+
+<div class="toolbar">
+  <button class="btn btn-primary" onclick="openModal()">+ New Entry</button>
+  <button class="btn btn-teal" onclick="window.print()">Export to PDF</button>
+  <button class="btn btn-outline" id="filter-all" onclick="setFilter('all')">All</button>
+  <button class="btn btn-outline" id="filter-regulatory" onclick="setFilter('regulatory')">Regulatory</button>
+  <button class="btn btn-outline" id="filter-contact" onclick="setFilter('contact')">Contacts</button>
+  <button class="btn btn-outline" id="filter-update" onclick="setFilter('update')">Updates</button>
+  <button class="btn btn-outline" id="filter-notification" onclick="setFilter('notification')">Notifications</button>
+  <button class="btn btn-outline" onclick="loadEntries()">↻ Refresh</button>
+  <span class="log-count" id="log-count">Loading...</span>
+</div>
+
+<div class="sync-bar hidden" id="sync-bar">
+  <div class="sync-dot"></div>
+  <span id="sync-msg">Connected to Google Sheets</span>
+</div>
+
+<div class="setup-banner" id="setup-banner">
+  <h3>⚙ Setup Required — Connect to Google Sheets</h3>
+  <p>This log is not yet connected to a Google Sheet. Entries will not be saved permanently until you complete the setup.<br><br>
+  <strong>Step 1:</strong> Create a new Google Sheet in your Drive.<br>
+  <strong>Step 2:</strong> Go to <strong>Extensions → Apps Script</strong> in your sheet.<br>
+  <strong>Step 3:</strong> Paste the Google Apps Script code (provided separately).<br>
+  <strong>Step 4:</strong> Click <strong>Deploy → New deployment → Web app</strong>. Set access to <em>Anyone</em>. Copy the web app URL.<br>
+  <strong>Step 5:</strong> Open this HTML file in a text editor. Find <code>https://script.google.com/macros/s/AKfycbyMoQwU4eSUNjDfui0IfJT-8xyOkjv3x8yPdF2Jtz3LF5zF1RiarV6GO8pfVYwOmGjC/exec</code> and replace it with your web app URL.<br>
+  <strong>Step 6:</strong> Save and reopen in Chrome. Entries will now save to your Google Sheet permanently.</p>
+</div>
+
+<div class="container">
+  <div id="empty-state" class="empty-state" style="display:none;">
+    <h3>No log entries yet</h3>
+    <p>Click "+ New Entry" to record your first research verification, contact, or knowledge base update.</p>
+  </div>
+  <div id="entries-container"></div>
+</div>
+
+<div class="footer">
+  <p>Monica Smith, LCSW, PEL-SSW · Certified AI Consultant · Figure 8 Intelligence™ · connect@rysepllc.com</p>
+  <p style="color:rgba(255,255,255,0.4);">Entries saved to Google Sheets · © 2026</p>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modal-title">New Log Entry</h2>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="field-label">Entry Type <span class="field-req">*</span></div>
+      <div class="type-selector">
+        <div class="type-option selected" onclick="selectType('regulatory',this)">
+          <div class="t-icon">🔍</div><div class="t-name">Regulatory Research</div>
+          <div class="t-desc">Perplexity search, source verified</div>
+        </div>
+        <div class="type-option" onclick="selectType('contact',this)">
+          <div class="t-icon">📞</div><div class="t-name">Human Contact</div>
+          <div class="t-desc">ISBE, ROE, legal, district call/email</div>
+        </div>
+        <div class="type-option" onclick="selectType('update',this)">
+          <div class="t-icon">⬆</div><div class="t-name">Anchora™ Update</div>
+          <div class="t-desc">Knowledge base file updated</div>
+        </div>
+        <div class="type-option" onclick="selectType('notification',this)">
+          <div class="t-icon">📬</div><div class="t-name">District Notification</div>
+          <div class="t-desc">Client notified of change</div>
+        </div>
+      </div>
+      <div id="modal-fields"></div>
+    </div>
+    <div class="modal-footer">
+      <span class="saving-indicator" id="saving-indicator">Saving to Google Sheets...</span>
+      <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" id="save-btn" onclick="saveEntry()">Save Entry</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── CONFIGURATION — REPLACE THIS URL ──────────────────────────────────────
+const SHEET_URL = 'https://script.google.com/macros/s/AKfycbyMoQwU4eSUNjDfui0IfJT-8xyOkjv3x8yPdF2Jtz3LF5zF1RiarV6GO8pfVYwOmGjC/exec';
+const IS_CONFIGURED = SHEET_URL !== 'https://script.google.com/macros/s/AKfycbyMoQwU4eSUNjDfui0IfJT-8xyOkjv3x8yPdF2Jtz3LF5zF1RiarV6GO8pfVYwOmGjC/exec';
+
+// ── STATE ──────────────────────────────────────────────────────────────────
+let allEntries = [];
+let currentType = 'regulatory';
+let currentFilter = 'all';
+
+const kbFiles = [
+  'File 1 — SB 1920','File 2 — FERPA/ISSRA','File 3 — SOPPA',
+  'File 4 — COPPA','File 5 — IDEA/IEP','File 6 — Bias',
+  'File 7 — AI Literacy','File 8 — Ethical Use','File 9 — Mental Health',
+  'File 10 — Suicide Prevention','File 11 — Data Firewalls',
+  'File 12 — Structural Bias','File 13 — Threat Assessment',
+  'File 14 — Role Calibrations','File 15 — Governance Extended',
+  'File 16 — Dept Architecture','File 17 — Training Tracker','System Prompt'
+];
+
+// ── INIT ───────────────────────────────────────────────────────────────────
+document.getElementById('date-display').textContent =
+  new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+
+if (!IS_CONFIGURED) {
+  document.getElementById('setup-banner').classList.remove('hidden');
+  showSync('warning', '⚠ Not connected — complete setup to save entries permanently');
+} else {
+  document.getElementById('setup-banner').classList.add('hidden');
+  loadEntries();
+}
+
+// ── GOOGLE SHEETS API ──────────────────────────────────────────────────────
+async function loadEntries() {
+  if (!IS_CONFIGURED) { renderEntries([]); return; }
+  showSync('loading', 'Syncing with Google Sheets...');
+  try {
+    const res = await fetch(SHEET_URL + '?action=get', {method:'GET'});
+    const data = await res.json();
+    allEntries = data.entries || [];
+    renderEntries(allEntries);
+    showSync('ok', `Connected · ${allEntries.length} entr${allEntries.length===1?'y':'ies'} · Last synced ${new Date().toLocaleTimeString()}`);
+  } catch(e) {
+    showSync('error', 'Connection error — check your Apps Script URL');
+    renderEntries([]);
+  }
+}
+
+async function postEntry(entry) {
+  const res = await fetch(SHEET_URL, {
+    method: 'POST',
+    body: JSON.stringify({action:'add', entry}),
+  });
+  return await res.json();
+}
+
+async function deleteEntryRemote(id) {
+  const res = await fetch(SHEET_URL, {
+    method: 'POST',
+    body: JSON.stringify({action:'delete', id}),
+  });
+  return await res.json();
+}
+
+function showSync(state, msg) {
+  const bar = document.getElementById('sync-bar');
+  const msgEl = document.getElementById('sync-msg');
+  bar.className = 'sync-bar';
+  if (state === 'ok') bar.classList.add('');
+  else if (state === 'error') bar.classList.add('error');
+  else if (state === 'warning') bar.classList.add('warning');
+  bar.classList.remove('hidden');
+  msgEl.textContent = msg;
+}
+
+// ── MODAL ──────────────────────────────────────────────────────────────────
+function openModal() {
+  currentType = 'regulatory';
+  document.querySelectorAll('.type-option').forEach((el,i)=>el.classList.toggle('selected',i===0));
+  renderModalFields('regulatory');
+  document.getElementById('modal-overlay').classList.add('open');
+}
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+}
+function selectType(type, el) {
+  document.querySelectorAll('.type-option').forEach(o=>o.classList.remove('selected'));
+  el.classList.add('selected');
+  currentType = type;
+  renderModalFields(type);
+}
+function setUrgency(level, btn) {
+  btn.closest('.urgency-row').querySelectorAll('.urgency-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('f-urgency').value = level;
+}
+function toggleTag(el) { el.classList.toggle('selected'); }
+function getSelectedTags() {
+  return Array.from(document.querySelectorAll('.kb-tag.selected')).map(t=>t.textContent).join(', ');
+}
+
+const kbTagsHtml = () => `<div class="kb-tag-row" id="f-kb-tags">${kbFiles.map(f=>`<span class="kb-tag" onclick="toggleTag(this)">${f}</span>`).join('')}</div>`;
+
+function renderModalFields(type) {
+  const now = new Date();
+  const d = now.toISOString().split('T')[0];
+  const t = now.toTimeString().slice(0,5);
+  let h = '';
+  if (type==='regulatory') h = `
+    <div class="form-grid-2">
+      <div><div class="field-label">Research Topic <span class="field-req">*</span></div><input type="text" id="f-topic" placeholder="e.g. ISBE SB 1920 guidance update"></div>
+      <div><div class="field-label">Urgency</div>
+        <div class="urgency-row">
+          <button class="urgency-btn routine active" onclick="setUrgency('routine',this)">Routine</button>
+          <button class="urgency-btn significant" onclick="setUrgency('significant',this)">Significant</button>
+          <button class="urgency-btn urgent" onclick="setUrgency('urgent',this)">Urgent</button>
+        </div><input type="hidden" id="f-urgency" value="routine"></div>
+    </div>
+    <div class="form-grid-3">
+      <div><div class="field-label">Date <span class="field-req">*</span></div><input type="date" id="f-date" value="${d}"></div>
+      <div><div class="field-label">Time</div><input type="time" id="f-time" value="${t}"></div>
+      <div><div class="field-label">Research Tool</div><select id="f-tool"><option>Perplexity AI</option><option>Perplexity Tasks (automated)</option><option>ISBE.net direct</option><option>ilga.gov direct</option><option>ed.gov direct</option><option>Other primary source</option></select></div>
+    </div>
+    <div class="form-full"><div class="field-label">Perplexity Query Used</div><input type="text" id="f-query" placeholder="Exact search query"></div>
+    <div class="form-full"><div class="field-label">Primary Source Verified Against <span class="field-req">*</span></div><input type="text" id="f-source" placeholder="e.g. isbe.net official publication"></div>
+    <div class="form-full"><div class="field-label">Source URL</div><input type="url" id="f-url" placeholder="https://"></div>
+    <div class="form-full"><div class="field-label">Key Finding <span class="field-req">*</span></div><textarea id="f-finding" placeholder="What was found and does it require a knowledge base update?"></textarea></div>
+    <div class="form-full"><div class="field-label">Knowledge Base Files Affected</div>${kbTagsHtml()}</div>
+    <div class="form-grid-2">
+      <div><div class="field-label">Update Required?</div><select id="f-update-req"><option value="no">No — No change needed</option><option value="yes">Yes — Update needed</option><option value="monitor">Monitor — Check next cycle</option></select></div>
+      <div><div class="field-label">Verified By</div><input type="text" id="f-verified-by" value="Monica Smith, LCSW, PEL-SSW"></div>
+    </div>
+    <div class="form-full"><div class="field-label">Additional Notes</div><textarea id="f-notes" placeholder="Professional observations, follow-up needed, context..."></textarea></div>`;
+  else if (type==='contact') h = `
+    <div class="form-grid-2">
+      <div><div class="field-label">Organization <span class="field-req">*</span></div><select id="f-org"><option>ISBE — Illinois State Board of Education</option><option>ROE — Regional Office of Education</option><option>Illinois Attorney General</option><option>U.S. Dept of Education / OCR</option><option>District Legal Counsel</option><option>Monica's Legal Counsel</option><option>JTHS 204 — Superintendent</option><option>JTHS 204 — Other</option><option>Other District</option><option>Other</option></select></div>
+      <div><div class="field-label">Contact Method</div><select id="f-method"><option>Phone Call</option><option>Email — Received</option><option>Email — Sent</option><option>Email — Exchange</option><option>In-Person Meeting</option><option>Video Call</option></select></div>
+    </div>
+    <div class="form-grid-2">
+      <div><div class="field-label">Contact Person</div><input type="text" id="f-contact-name" placeholder="Name and title"></div>
+      <div><div class="field-label">Phone or Email</div><input type="text" id="f-contact-info" placeholder="Contact info"></div>
+    </div>
+    <div class="form-grid-3">
+      <div><div class="field-label">Date <span class="field-req">*</span></div><input type="date" id="f-date" value="${d}"></div>
+      <div><div class="field-label">Time</div><input type="time" id="f-time" value="${t}"></div>
+      <div><div class="field-label">Duration</div><input type="text" id="f-duration" placeholder="e.g. 20 minutes"></div>
+    </div>
+    <div class="form-full"><div class="field-label">Purpose / Topic <span class="field-req">*</span></div><input type="text" id="f-topic" placeholder="Why was this contact made?"></div>
+    <div class="form-full"><div class="field-label">Summary of Discussion <span class="field-req">*</span></div><textarea id="f-finding" placeholder="What was discussed and confirmed?"></textarea></div>
+    <div class="form-full"><div class="field-label">Key Takeaway / Guidance Received</div><textarea id="f-takeaway" placeholder="What is the actionable guidance from this contact?"></textarea></div>
+    <div class="form-full"><div class="field-label">Knowledge Base Files Affected</div>${kbTagsHtml()}</div>
+    <div class="form-grid-2">
+      <div><div class="field-label">Follow-Up Required?</div><select id="f-followup"><option value="no">No follow-up needed</option><option value="yes-self">Yes — Monica to follow up</option><option value="yes-district">Yes — District to follow up</option><option value="yes-legal">Yes — Route to legal counsel</option></select></div>
+      <div><div class="field-label">Follow-Up Date</div><input type="date" id="f-followup-date"></div>
+    </div>
+    <div class="form-full"><div class="field-label">Additional Notes</div><textarea id="f-notes" placeholder="Documents referenced, additional context..."></textarea></div>`;
+  else if (type==='update') h = `
+    <div class="form-grid-2">
+      <div><div class="field-label">Update Trigger <span class="field-req">*</span></div><select id="f-trigger"><option>Regulatory research finding</option><option>ISBE publication</option><option>New Illinois law or amendment</option><option>Federal guidance update</option><option>Contact with ISBE or ROE</option><option>Quarterly scheduled review</option><option>Annual review</option><option>Client question surfaced gap</option><option>Other</option></select></div>
+      <div><div class="field-label">Urgency</div><div class="urgency-row"><button class="urgency-btn routine active" onclick="setUrgency('routine',this)">Routine</button><button class="urgency-btn significant" onclick="setUrgency('significant',this)">Significant</button><button class="urgency-btn urgent" onclick="setUrgency('urgent',this)">Urgent</button></div><input type="hidden" id="f-urgency" value="routine"></div>
+    </div>
+    <div class="form-grid-3">
+      <div><div class="field-label">Date <span class="field-req">*</span></div><input type="date" id="f-date" value="${d}"></div>
+      <div><div class="field-label">Time</div><input type="time" id="f-time" value="${t}"></div>
+      <div><div class="field-label">Agent Updated</div><input type="text" id="f-agent" placeholder="e.g. Anchora™ — JTHS 204"></div>
+    </div>
+    <div class="form-full"><div class="field-label">What Changed — Summary <span class="field-req">*</span></div><input type="text" id="f-topic" placeholder="Brief title of what was updated"></div>
+    <div class="form-full"><div class="field-label">Detailed Description of Change <span class="field-req">*</span></div><textarea id="f-finding" placeholder="What was added, changed, or removed from the knowledge base?"></textarea></div>
+    <div class="form-full"><div class="field-label">Knowledge Base Files Updated <span class="field-req">*</span></div>${kbTagsHtml()}</div>
+    <div class="form-full"><div class="field-label">Source / Basis for Update</div><input type="text" id="f-source" placeholder="Verified source that drove this update"></div>
+    <div class="form-full"><div class="field-label">Source URL</div><input type="url" id="f-url" placeholder="https://"></div>
+    <div class="form-grid-2">
+      <div><div class="field-label">District Policy Action Required?</div><select id="f-policy-action"><option value="no">No — KB update only</option><option value="notify">Notify district</option><option value="recommended">District action recommended</option><option value="required">District action required</option></select></div>
+      <div><div class="field-label">Approved By</div><input type="text" id="f-approved-by" value="Monica Smith, LCSW, PEL-SSW"></div>
+    </div>
+    <div class="form-full"><div class="field-label">Additional Notes</div><textarea id="f-notes" placeholder="Any additional context..."></textarea></div>`;
+  else if (type==='notification') h = `
+    <div class="form-grid-2">
+      <div><div class="field-label">District Notified <span class="field-req">*</span></div><input type="text" id="f-district" placeholder="e.g. JTHS 204"></div>
+      <div><div class="field-label">Notification Method</div><select id="f-method"><option>Email</option><option>Phone Call</option><option>In-Person Meeting</option><option>Written Report</option><option>Video Call</option></select></div>
+    </div>
+    <div class="form-grid-2">
+      <div><div class="field-label">Recipient <span class="field-req">*</span></div><input type="text" id="f-recipient" placeholder="Name and title"></div>
+      <div><div class="field-label">Recipient Email</div><input type="email" id="f-recipient-email" placeholder="email@district.org"></div>
+    </div>
+    <div class="form-grid-3">
+      <div><div class="field-label">Date <span class="field-req">*</span></div><input type="date" id="f-date" value="${d}"></div>
+      <div><div class="field-label">Time</div><input type="time" id="f-time" value="${t}"></div>
+      <div><div class="field-label">Notification Type</div><select id="f-notif-type"><option>Routine monthly update</option><option>Significant regulatory change</option><option>Urgent enforcement signal</option><option>District policy action required</option><option>Annual compliance summary</option><option>Knowledge base update notice</option></select></div>
+    </div>
+    <div class="form-full"><div class="field-label">Subject / Topic <span class="field-req">*</span></div><input type="text" id="f-topic" placeholder="What was communicated?"></div>
+    <div class="form-full"><div class="field-label">Notification Content <span class="field-req">*</span></div><textarea id="f-finding" placeholder="What changed, why it matters, what was updated, whether district action is recommended..."></textarea></div>
+    <div class="form-full"><div class="field-label">Knowledge Base Files Referenced</div>${kbTagsHtml()}</div>
+    <div class="form-grid-2">
+      <div><div class="field-label">Action Requested?</div><select id="f-action-req"><option value="none">Informational only</option><option value="review">Review recommended</option><option value="policy">Policy update recommended</option><option value="board">Board discussion recommended</option><option value="legal">Legal counsel recommended</option><option value="required">Immediate action required</option></select></div>
+      <div><div class="field-label">District Response</div><select id="f-response"><option value="pending">Awaiting response</option><option value="acknowledged">Acknowledged</option><option value="action-taken">Action confirmed</option><option value="no-response">No response</option></select></div>
+    </div>
+    <div class="form-full"><div class="field-label">Additional Notes</div><textarea id="f-notes" placeholder="Response notes, follow-up needed..."></textarea></div>`;
+  document.getElementById('modal-fields').innerHTML = h;
+}
+
+// ── SAVE ───────────────────────────────────────────────────────────────────
+async function saveEntry() {
+  const g = id => { const el=document.getElementById(id); return el?el.value:''; };
+  const topic = g('f-topic');
+  if (!topic.trim()) { alert('Please fill in the required topic/subject field.'); return; }
+  if (!IS_CONFIGURED) { alert('Please complete the Google Sheets setup before saving entries.'); return; }
+
+  const saveBtn = document.getElementById('save-btn');
+  const indicator = document.getElementById('saving-indicator');
+  saveBtn.disabled = true;
+  saveBtn.textContent = 'Saving...';
+  indicator.style.display = 'inline';
+
+  const entry = {
+    type: currentType, topic,
+    date: g('f-date'), time: g('f-time'),
+    finding: g('f-finding'), notes: g('f-notes'),
+    kbFiles: getSelectedTags(),
+    urgency: g('f-urgency') || 'routine',
+    query: g('f-query'), source: g('f-source'), url: g('f-url'),
+    tool: g('f-tool'), updateRequired: g('f-update-req'),
+    verifiedBy: g('f-verified-by') || 'Monica Smith, LCSW, PEL-SSW',
+    org: g('f-org'), method: g('f-method'),
+    contactName: g('f-contact-name'), contactInfo: g('f-contact-info'),
+    duration: g('f-duration'), takeaway: g('f-takeaway'),
+    followup: g('f-followup'), followupDate: g('f-followup-date'),
+    trigger: g('f-trigger'), agent: g('f-agent'),
+    policyAction: g('f-policy-action'), approvedBy: g('f-approved-by'),
+    district: g('f-district'), recipient: g('f-recipient'),
+    recipientEmail: g('f-recipient-email'), notifType: g('f-notif-type'),
+    actionReq: g('f-action-req'), response: g('f-response'),
+    timestamp: new Date().toISOString(),
+  };
+
+  try {
+    const result = await postEntry(entry);
+    allEntries = result.entries || allEntries;
+    renderEntries(allEntries);
+    closeModal();
+    showSync('ok', `Saved to Google Sheets · ${allEntries.length} entries`);
+  } catch(e) {
+    alert('Save failed. Check your Google Sheets connection and try again.');
+    showSync('error', 'Save failed — check your Apps Script URL');
+  } finally {
+    saveBtn.disabled = false;
+    saveBtn.textContent = 'Save Entry';
+    indicator.style.display = 'none';
+  }
+}
+
+// ── DELETE ─────────────────────────────────────────────────────────────────
+async function deleteEntry(event, id) {
+  event.stopPropagation();
+  if (!confirm('Delete this entry permanently from Google Sheets?')) return;
+  try {
+    const result = await deleteEntryRemote(id);
+    allEntries = result.entries || allEntries.filter(e=>e.id!==id);
+    renderEntries(allEntries);
+    showSync('ok', `Entry deleted · ${allEntries.length} entries remaining`);
+  } catch(e) {
+    alert('Delete failed. Please try again.');
+  }
+}
+
+// ── RENDER ─────────────────────────────────────────────────────────────────
+function setFilter(f) {
+  currentFilter = f;
+  document.querySelectorAll('.btn-outline[id^="filter-"]').forEach(b=>b.classList.remove('active'));
+  const btn = document.getElementById('filter-'+f);
+  if (btn) btn.classList.add('active');
+  renderEntries(allEntries);
+}
+
+function renderEntries(entries) {
+  const filtered = currentFilter==='all' ? entries : entries.filter(e=>e.type===currentFilter);
+  const container = document.getElementById('entries-container');
+  const empty = document.getElementById('empty-state');
+  document.getElementById('log-count').textContent = `${entries.length} entr${entries.length===1?'y':'ies'}`;
+
+  if (filtered.length===0) { empty.style.display='block'; container.innerHTML=''; return; }
+  empty.style.display='none';
+
+  const typeLabels = {regulatory:'Regulatory Research',contact:'Human Contact',update:'Anchora™ Update',notification:'District Notification'};
+
+  container.innerHTML = filtered.map((e,i) => {
+    const sub = [e.date,e.time].filter(Boolean).join(' at ') +
+      (e.org ? ` · ${e.org}` : '') + (e.agent ? ` · ${e.agent}` : '') +
+      (e.urgency && e.urgency!=='routine' ? ` · <b style="color:${e.urgency==='urgent'?'var(--red)':'var(--amber)'};">${e.urgency.toUpperCase()}</b>` : '');
+    return `
+      <div class="entry-card type-${e.type}" id="card-${e.id||i}">
+        <div class="entry-header" onclick="toggleBody('${e.id||i}')">
+          <div class="entry-num">#${String(i+1).padStart(3,'0')}</div>
+          <span class="entry-type-badge">${typeLabels[e.type]||e.type}</span>
+          <div class="entry-summary">
+            <div class="title">${e.topic||''}</div>
+            <div class="subtitle">${sub}</div>
+          </div>
+          <button class="entry-delete" onclick="deleteEntry(event,'${e.id||i}')" title="Delete">×</button>
+        </div>
+        <div class="entry-body" id="body-${e.id||i}">${buildDetail(e)}</div>
+      </div>`;
+  }).join('');
+
+  document.getElementById('filter-all').classList.toggle('active', currentFilter==='all');
+}
+
+function toggleBody(id) {
+  const b = document.getElementById('body-'+id);
+  if (b) b.classList.toggle('open');
+}
+
+function field(label, val, color) {
+  if (!val) return '';
+  const style = color ? `border-left-color:${color};background:${color}22;` : '';
+  return `<div><div class="field-label">${label}</div><div class="field-display" style="${style}">${val}</div></div>`;
+}
+function urlField(label, val) {
+  if (!val) return '';
+  return `<div><div class="field-label">${label}</div><div class="field-display"><a href="${val}" target="_blank">${val}</a></div></div>`;
+}
+
+function buildDetail(e) {
+  if (e.type==='regulatory') return `
+    <div class="form-grid-2">${field('Date & Time',[e.date,e.time].filter(Boolean).join(' at '))}${field('Tool',e.tool)}</div>
+    ${field('Search Query',e.query,'#534AB7')}${field('Primary Source',e.source)}${urlField('Source URL',e.url)}
+    ${field('Key Finding',e.finding)}${field('KB Files Affected',e.kbFiles,'#0F6E56')}
+    <div class="form-grid-2">${field('Update Required',e.updateRequired)}${field('Urgency',e.urgency?.toUpperCase())}</div>
+    ${field('Verified By',e.verifiedBy)}${field('Notes',e.notes)}`;
+  if (e.type==='contact') return `
+    <div class="form-grid-2">${field('Organization',e.org,'#534AB7')}${field('Method',e.method)}</div>
+    <div class="form-grid-2">${field('Contact Person',e.contactName)}${field('Contact Info',e.contactInfo)}</div>
+    <div class="form-grid-3">${field('Date',e.date)}${field('Time',e.time)}${field('Duration',e.duration)}</div>
+    ${field('Topic',e.topic)}${field('Discussion Summary',e.finding)}${field('Key Takeaway',e.takeaway,'#0F6E56')}
+    ${field('KB Files',e.kbFiles,'#0F6E56')}
+    <div class="form-grid-2">${field('Follow-Up',e.followup)}${field('Follow-Up Date',e.followupDate)}</div>
+    ${field('Notes',e.notes)}`;
+  if (e.type==='update') return `
+    <div class="form-grid-2">${field('Trigger',e.trigger)}${field('Urgency',e.urgency?.toUpperCase())}</div>
+    <div class="form-grid-3">${field('Date',e.date)}${field('Time',e.time)}${field('Agent',e.agent)}</div>
+    ${field('What Changed',e.topic,'#BA7517')}${field('Description',e.finding)}
+    ${field('KB Files Updated',e.kbFiles,'#0F6E56')}${field('Source',e.source)}${urlField('Source URL',e.url)}
+    <div class="form-grid-2">${field('Policy Action Required',e.policyAction)}${field('Approved By',e.approvedBy)}</div>
+    ${field('Notes',e.notes)}`;
+  if (e.type==='notification') return `
+    <div class="form-grid-2">${field('District',e.district,'#534AB7')}${field('Method',e.method)}</div>
+    <div class="form-grid-2">${field('Recipient',e.recipient)}${field('Email',e.recipientEmail)}</div>
+    <div class="form-grid-3">${field('Date',e.date)}${field('Time',e.time)}${field('Type',e.notifType)}</div>
+    ${field('Topic',e.topic)}${field('Content',e.finding)}${field('KB Files',e.kbFiles,'#0F6E56')}
+    <div class="form-grid-2">${field('Action Requested',e.actionReq)}${field('Response',e.response)}</div>
+    ${field('Notes',e.notes)}`;
+  return field('Details',e.finding)+field('Notes',e.notes);
+}
+
+// initial filter state
+document.getElementById('filter-all').classList.add('active');
+</script>
+</body>
+</html>
