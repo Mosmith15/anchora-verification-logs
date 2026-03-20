@@ -8,7 +8,7 @@
 <style>
   :root {
     --purple: #534AB7; --l-purple: #EEEDFE;
-    --teal: #0F6E56; --l-teal: #E1F5EE;
+    --teal: #0F6E56; --l-teal: #E1F5EE;h
     --amber: #BA7517; --l-amber: #FAEEDA;
     --coral: #993C1D; --l-coral: #FAECE7;
     --green: #3B6D11; --l-green: #EAF3DE;
@@ -187,7 +187,7 @@
   <strong>Step 2:</strong> Go to <strong>Extensions → Apps Script</strong> in your sheet.<br>
   <strong>Step 3:</strong> Paste the Google Apps Script code (provided separately).<br>
   <strong>Step 4:</strong> Click <strong>Deploy → New deployment → Web app</strong>. Set access to <em>Anyone</em>. Copy the web app URL.<br>
-  <strong>Step 5:</strong> Open this HTML file in a text editor. Find <code>https://script.google.com/macros/s/AKfycbyMoQwU4eSUNjDfui0IfJT-8xyOkjv3x8yPdF2Jtz3LF5zF1RiarV6GO8pfVYwOmGjC/exec</code> and replace it with your web app URL.<br>
+  <strong>Step 5:</strong> Open this HTML file in a text editor. Find <code>https://script.google.com/macros/s/AKfycbxkuUSpyOI1Mxwr_l-QsUqU_kiaeywJqBIS94JsdhStMTUnfvFYH4_5A422lvWeyvE1/exec</code> and replace it with your web app URL.<br>
   <strong>Step 6:</strong> Save and reopen in Chrome. Entries will now save to your Google Sheet permanently.</p>
 </div>
 
@@ -243,8 +243,8 @@
 
 <script>
 // ── CONFIGURATION — REPLACE THIS URL ──────────────────────────────────────
-const SHEET_URL = 'https://script.google.com/macros/s/AKfycbyMoQwU4eSUNjDfui0IfJT-8xyOkjv3x8yPdF2Jtz3LF5zF1RiarV6GO8pfVYwOmGjC/exec';
-const IS_CONFIGURED = SHEET_URL !== 'https://script.google.com/macros/s/AKfycbyMoQwU4eSUNjDfui0IfJT-8xyOkjv3x8yPdF2Jtz3LF5zF1RiarV6GO8pfVYwOmGjC/exec';
+const SHEET_URL = 'https://script.google.com/macros/s/AKfycbxkuUSpyOI1Mxwr_l-QsUqU_kiaeywJqBIS94JsdhStMTUnfvFYH4_5A422lvWeyvE1/exec';
+const IS_CONFIGURED = SHEET_URL !== 'https://script.google.com/macros/s/AKfycbxkuUSpyOI1Mxwr_l-QsUqU_kiaeywJqBIS94JsdhStMTUnfvFYH4_5A422lvWeyvE1/exec';
 
 // ── STATE ──────────────────────────────────────────────────────────────────
 let allEntries = [];
@@ -299,7 +299,7 @@ async function postEntry(entry) {
 
 async function deleteEntryRemote(id) {
   const res = await fetch(SHEET_URL, {
-    method: 'POST',
+    method: 'POST',h
     body: JSON.stringify({action:'delete', id}),
   });
   return await res.json();
