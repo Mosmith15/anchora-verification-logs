@@ -313,8 +313,7 @@ function showSync(state, msg) {
   const bar = document.getElementById('sync-bar');
   const msgEl = document.getElementById('sync-msg');
   bar.className = 'sync-bar';
-  // ok state needs no extra class
-  else if (state === 'error') bar.classList.add('error');
+  if (state === 'error') bar.classList.add('error');
   else if (state === 'warning') bar.classList.add('warning');
   bar.classList.remove('hidden');
   msgEl.textContent = msg;
